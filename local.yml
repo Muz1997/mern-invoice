@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   api:
     restart: always
@@ -7,16 +5,32 @@ services:
       context: .
       dockerfile: ./docker/local/express/Dockerfile
     volumes:
-      - /app/node_modules #This will avoide overwriting the locl module to the container one
-      - .:/app #This will map the locl directory with container to keep the code updated other wise we have to build image again and again after each change
+      - /app/node_modules
+      - .:/app
     depends_on:
       - mongodb
-    ports:
-      - "1997:1997"
+    # ports:
+    #     - "1997:1997"
     environment:
       NODE_ENV: ${NODE_ENV}
       MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb
       FORCE_COLOR: 1
+      CHOKIDAR_USEPOLLING: true
+    networks:
+      - invoice
+
+  client:
+    build:
+      context: ./client
+      dockerfile: ./docker/local/Dockerfile
+    restart: on-failure
+    environment:
+      WDS_SOCKET_HOST: 127.0.0.1
+      CHOKIDAR_USEPOLLING: true
+      WATCHPACK_POLLING: true
+    volumes:
+      - ./client:/app
+      - /app/node_modules
     networks:
       - invoice
 
@@ -44,14 +58,30 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin12345
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123456
     networks:
       - invoice
+
   mailhog:
     image: mailhog/mailhog:v1.0.0
     ports:
       - "8025:8025"
       - "1025:1025"
+    networks:
+      - invoice
+
+  nginx:
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/staticfiles
+      - pdf_volume:/app/docs
     networks:
       - invoice
 
@@ -61,3 +91,5 @@ networks:
 
 volumes:
   mongodb-data:
+  static_volume:
+  pdf_volume:
