@@ -9,10 +9,10 @@ import { systemLogs } from "./Logger.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sendEmail = async (isEmail, subject, payload, template) => {
+const sendEmail = async (email, subject, payload, template) => {
   try {
     const sourceDirectory = fs.readFileSync(
-      path.join(__dirname, template),
+      path.join(__dirname, "template", template),
       "utf8"
     );
     const compiledTemplate = handlebars.compile(sourceDirectory);
