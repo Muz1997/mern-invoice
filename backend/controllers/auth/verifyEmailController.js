@@ -32,5 +32,17 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
   await user.save();
   if (user.isEmailVerified) {
     const emaillink = `${domainUrl}/login`;
+    const payload = {
+      name: user.firstName,
+      link: emaillink,
+    };
+    await sendEmail(
+      user.email,
+      "Welcome - Account Verified",
+      payload,
+      "welcome.handlebars"
+    );
+    res.redirect("/auth/verify");
   }
 });
+export default verifyUserEmail;

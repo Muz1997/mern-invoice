@@ -59,10 +59,10 @@ const registerUser = asyncHandler(async (req, res) => {
   if (registeredUser) {
     const verificationToken = randomBytes(32).toString("hex");
     let emailVerificationToken = await new VerificationToken({
-      _UserId: registeredUser._id,
+      _userId: registeredUser._id,
       token: verificationToken,
     }).save();
-    const emailLink = `${domainUrl}/api/v1/auth/verify.${emailVerificationToken.token}/${registeredUser._id}`;
+    const emailLink = `${domainUrl}/api/v1/auth/verify/${emailVerificationToken.token}/${registeredUser._id}`;
     const payload = {
       name: registeredUser.firstName,
       link: emailLink,

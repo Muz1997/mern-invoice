@@ -3,7 +3,6 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import validator from "validator";
 import { USER } from "../constants/index.js";
-import isEmail from "validator/lib/isEmail";
 
 const { Schema } = mongoose;
 
@@ -23,10 +22,10 @@ const userSchema = new Schema(
       trim: true,
       validate: {
         validator: function (value) {
-          return /^[A-Z][A-z0-9-_]{3,23}$/.test(value);
+          return /^[A-z][A-z0-9-_]{3,23}$/.test(value);
         },
         message:
-          "username must be alphanumeric, without special characters. Hyphens and underscores allowed",
+          "username must be alphanumeric,without special characters.Hyphens and underscores allowed",
       },
     },
     firstName: {
@@ -78,7 +77,6 @@ const userSchema = new Schema(
     businessName: String,
     phoneNumber: {
       type: String,
-      default: "+441234567890",
       validate: [
         validator.isMobilePhone,
         "Your Mobile phone number must begin with a '+', followed by your country code and then actual number e.g +441234567890",
