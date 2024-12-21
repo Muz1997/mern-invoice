@@ -30,6 +30,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
   }
   user.isEmailVerified = true;
   await user.save();
+  await userToken.deleteOne();
   if (user.isEmailVerified) {
     const emaillink = `${domainUrl}/login`;
     const payload = {
